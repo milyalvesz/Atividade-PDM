@@ -18,7 +18,7 @@ col1, col2, col3 = st.columns([1,2,1])
 with col2:
     st.markdown(f"""
         <div style="text-align: center; margin-bottom: 50px;">
-            <a href="https://starlink.com/" target="_blank">
+            <a href="https://www.marvel.com/" target="_blank">
                 <img src="data:image/png;base64,{img_base64}" 
                      width="320" 
                      style="border-radius:12px;">
@@ -73,7 +73,7 @@ with col_left:
         """, unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top:30px;'>", unsafe_allow_html=True)
-    st.link_button("Acessar", "https://www.marvel.com/")
+    st.link_button("Acessar", "https://sites.google.com/d/1yyzwEYERmYpgvVYuOikXuXAqDVc4sJ0b/p/1966fQ7vG-ZAmqHJLInqbMB5Qu7FMJbRT/edit")
     st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
