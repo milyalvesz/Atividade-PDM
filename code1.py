@@ -9,8 +9,8 @@ def get_base64_image(path):
     with open(path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-img_base64 = get_base64_image("star.png")
-zap_base64 = get_base64_image("zap2026.png")
+img_base64 = get_base64_image("Marvel-Studios-Emblema.jpg")
+zap_base64 = get_base64_image("zaplogo.png")
 
 # TOPO (imagem clicável)
 col1, col2, col3 = st.columns([1,2,1])
@@ -32,7 +32,7 @@ col_left, col_right = st.columns([3,1])
 with col_left:
     st.markdown("""
     <div style='margin-bottom:30px; font-size:30px;'>
-        <b>Nome Dinaldo Jorge</b>
+        <b>Nome Jamily Alves</b>
     </div>
     """, unsafe_allow_html=True)
 
@@ -49,7 +49,7 @@ with col_left:
         ">
         """, unsafe_allow_html=True)
 
-        st.image("dino2026.png", width=800)
+        st.image("mimiu.jpeg", width=800)
 
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -63,16 +63,17 @@ with col_left:
             width: 100%;
             max-width: none;
         ">
-            <b>Sobre Dinaldo:<br>
-            Dinaldo Jorge, 49 anos, é um profissional experiente na área de sistemas de telecomunicações,
-            destacando-se pela sólida formação técnica e expertise em infraestrutura de rede, conectividade
-            e suporte de TI.Com vasta vivência no mercado, busca posições que exijam soluções inovadoras em
-            redes, segurança digital e administração de sistemas.
+            <b>Sobre Jamily:<br>
+            Meu nome é Jamily Emily Alves Barbosa, tenho 17 anos. Nasci em Itabaiana, na Paraíba, e 
+        atualmente moro em Salgado de São Félix. Curso o Técnico em Informática 
+        integrado ao Ensino Médio no Instituto Federal da Paraíba (IFPB), 
+        uma fase muito importante para o meu crescimento, pois me proporciona novos aprendizados, 
+        desafios e responsabilidades que contribuem para a construção do meu futuro.
         </div>
         """, unsafe_allow_html=True)
 
     st.markdown("<div style='margin-top:30px;'>", unsafe_allow_html=True)
-    st.link_button("Acessar", "http://lattes.cnpq.br/4494611683890258")
+    st.link_button("Acessar", "https://www.marvel.com/")
     st.markdown("</div>", unsafe_allow_html=True)
 
 with col_right:
@@ -81,7 +82,7 @@ with col_right:
 # 🔥 NOVO BLOCO (WhatsApp clicável no final)
 st.markdown(f"""
     <div style="text-align: center; margin-top: 10px;">
-        <a href="https://wa.me/5583998234415" target="_blank">
+        <a href="https://wa.me/5583987894924" target="_blank">
             <img src="data:image/png;base64,{zap_base64}" width="100">
         </a>
     </div>
