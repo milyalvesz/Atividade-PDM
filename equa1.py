@@ -21,7 +21,7 @@ PASTA_APP = Path(__file__).parent
 # ============================================
 # CAMINHO DA LOGOMARCA
 # ============================================
-CAMINHO_LOGO = PASTA_APP / "mimiu.jpeg"
+CAMINHO_LOGO = PASTA_APP / "mat.jpeg"
 
 # ============================================
 # LOGOMARCA
