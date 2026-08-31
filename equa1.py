@@ -12,7 +12,16 @@ st.set_page_config(
     layout="centered"
 )
 
-\n# ============================================\n# FUNDO ROSA CLARO\n# ============================================\nst.markdown("""\n<style>\n.stApp {\n    background-color: #FCE4EC;\n}\n</style>\n""", unsafe_allow_html=True)\n
+# ============================================
+# FUNDO ROSA CLARO
+# ============================================
+st.markdown("""
+<style>
+.stApp {
+    background-color: #FCE4EC;
+}
+</style>
+""", unsafe_allow_html=True)                                                                                              
 # ============================================
 # CAMINHO DA PASTA DO PROGRAMA
 # ============================================
