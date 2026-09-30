@@ -74,15 +74,11 @@ def imagem_base64(url):
 
 
 # ============================================================
-# CARREGAR IMAGENS
+# CARREGAR SOMENTE A IMAGEM DO HERO EM BASE64
 # ============================================================
 
 HERO_BASE64 = imagem_base64(
     IMAGEM_HERO
-)
-
-FROTA_BASE64 = imagem_base64(
-    IMAGEM_FROTA
 )
 
 
@@ -515,6 +511,22 @@ div[data-testid="stFormSubmitButton"] > button {
 
 
 /* ============================================================
+   IMAGEM INFERIOR
+   ============================================================ */
+
+.imagem-inferior {
+
+    width: 100%;
+
+    border-radius: 24px;
+
+    display: block;
+
+    overflow: hidden;
+}
+
+
+/* ============================================================
    RODAPÉ
    ============================================================ */
 
@@ -839,20 +851,19 @@ if menu == "Dashboard":
             <div class="dark-card">
 
                 <h2>
-                    Gestão Profissional de
-                    Materiais Médicos
+                    Gestão Profissional de Materiais
+                    Médicos
                 </h2>
 
                 <p>
                     O MedInventário PRO permite manter
-                    materiais, insumos e equipamentos
-                    médicos organizados e catalogados.
+                    materiais, insumos e equipamentos médicos
+                    organizados e catalogados.
                 </p>
 
                 <p>
                     Monitore lotes, valores e quantidades
-                    com facilidade através de uma
-                    interface limpa.
+                    com facilidade através de uma interface limpa.
                 </p>
 
             </div>
@@ -860,30 +871,16 @@ if menu == "Dashboard":
         )
 
 
+    # ========================================================
+    # IMAGEM INFERIOR — CORRIGIDA
+    # ========================================================
+
     with coluna2:
 
-        if FROTA_BASE64:
-
-            st.markdown(
-                f"""
-                <img
-                    src="{FROTA_BASE64}"
-                    style="
-                        width: 100%;
-                        border-radius: 24px;
-                        display: block;
-                    "
-                >
-                """,
-                unsafe_allow_html=True
-            )
-
-        else:
-
-            st.image(
-                IMAGEM_FROTA,
-                use_container_width=True
-            )
+        st.image(
+            IMAGEM_FROTA,
+            use_container_width=True
+        )
 
 
 # ============================================================
