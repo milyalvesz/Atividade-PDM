@@ -4,13 +4,13 @@ import os
 
 # === CONFIGURAÇÃO DA PÁGINA ===
 st.set_page_config(
-    page_title="TechInventário PRO",
-    page_icon="💻",
+    page_title="MedInventário PRO",
+    page_icon="🏥",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-ARQUIVO = "equipamentos.csv"
+ARQUIVO = "materiais_medicos.csv"
 
 # === IMAGENS ===
 IMAGEM_HERO = (
@@ -18,6 +18,7 @@ IMAGEM_HERO = (
     "photo-1518770660439-4636190af475"
     "?auto=format&fit=crop&w=1800&q=90"
 )
+
 IMAGEM_FROTA = (
     "https://images.unsplash.com/"
     "photo-1531297484001-80022131f5a1"
@@ -27,6 +28,7 @@ IMAGEM_FROTA = (
 # === CSS ===
 st.markdown("""
 <style>
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
 
 html, body, [class*="css"] {
@@ -94,7 +96,12 @@ html, body, [class*="css"] {
 .hero-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(14,28,38,0.97) 0%, rgba(14,28,38,0.86) 45%, rgba(14,28,38,0.18) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(14,28,38,0.97) 0%,
+        rgba(14,28,38,0.86) 45%,
+        rgba(14,28,38,0.18) 100%
+    );
 }
 
 .hero-content {
@@ -186,13 +193,19 @@ html, body, [class*="css"] {
     box-shadow: 0 10px 30px rgba(0,0,0,0.08);
 }
 
-[data-testid="stWidgetLabel"] label, .stTextInput label, .stNumberInput label, .stSelectbox label, .stTextArea label {
+[data-testid="stWidgetLabel"] label,
+.stTextInput label,
+.stNumberInput label,
+.stSelectbox label,
+.stTextArea label {
     color: #26311F !important;
     font-size: 15px !important;
     font-weight: 700 !important;
 }
 
-.stTextInput input, .stNumberInput input, .stTextArea textarea {
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea {
     background-color: #FFFFFF !important;
     color: #202820 !important;
     border: 2px solid #7C8956 !important;
@@ -210,7 +223,8 @@ html, body, [class*="css"] {
     color: #FFFFFF !important;
 }
 
-.stButton > button, div[data-testid="stFormSubmitButton"] > button {
+.stButton > button,
+div[data-testid="stFormSubmitButton"] > button {
     background: linear-gradient(135deg, #52632D, #788B48) !important;
     color: #FFFFFF !important;
     border: none !important;
@@ -227,190 +241,540 @@ html, body, [class*="css"] {
     font-size: 14px;
     font-weight: 600;
 }
+
 </style>
 """, unsafe_allow_html=True)
 
+
 # === FUNÇÕES ===
+
 def carregar_dados():
-    colunas = ["Fabricante", "Modelo", "Ano", "Categoria", "Patrimonio", "Quantidade", "Valor", "Observacoes"]
+
+    colunas = [
+        "Fabricante",
+        "Modelo",
+        "Ano",
+        "Categoria",
+        "Patrimonio",
+        "Quantidade",
+        "Valor",
+        "Observacoes"
+    ]
+
     if os.path.exists(ARQUIVO):
+
         try:
             dados = pd.read_csv(ARQUIVO)
             return dados
+
         except Exception:
             return pd.DataFrame(columns=colunas)
+
     return pd.DataFrame(columns=colunas)
+
 
 def salvar_dados(dados):
     dados.to_csv(ARQUIVO, index=False)
 
-# CARREGAR DADOS
+
+# === CARREGAR DADOS ===
+
 df = carregar_dados()
-colunas_necessarias = ["Fabricante", "Modelo", "Ano", "Categoria", "Patrimonio", "Quantidade", "Valor", "Observacoes"]
+
+colunas_necessarias = [
+    "Fabricante",
+    "Modelo",
+    "Ano",
+    "Categoria",
+    "Patrimonio",
+    "Quantidade",
+    "Valor",
+    "Observacoes"
+]
+
 for coluna in colunas_necessarias:
+
     if coluna not in df.columns:
         df[coluna] = ""
 
-df["Valor"] = pd.to_numeric(df["Valor"], errors="coerce").fillna(0)
-df["Quantidade"] = pd.to_numeric(df["Quantidade"], errors="coerce").fillna(0)
+
+df["Valor"] = pd.to_numeric(
+    df["Valor"],
+    errors="coerce"
+).fillna(0)
+
+
+df["Quantidade"] = pd.to_numeric(
+    df["Quantidade"],
+    errors="coerce"
+).fillna(0)
+
 
 # === SIDEBAR ===
+
 st.sidebar.markdown("""
-    <div class="logo-title">TechInventário</div>
-    <div class="logo-subtitle">GESTÃO DE ATIVOS E EQUIPAMENTOS</div>
+    <div class="logo-title">MedInventário</div>
+    <div class="logo-subtitle">
+        GESTÃO DE MATERIAIS E EQUIPAMENTOS MÉDICOS
+    </div>
 """, unsafe_allow_html=True)
 
 st.sidebar.markdown("<br>", unsafe_allow_html=True)
-menu = st.sidebar.radio("NAVEGAÇÃO", ["Dashboard", "+ Cadastrar Item", "Itens Cadastrados"])
+
+menu = st.sidebar.radio(
+    "NAVEGAÇÃO",
+    [
+        "Dashboard",
+        "+ Cadastrar Material",
+        "Materiais Cadastrados"
+    ]
+)
 
 st.sidebar.markdown("---")
-st.sidebar.caption("TechInventário PRO 2026")
+
+st.sidebar.caption("MedInventário PRO 2026")
+
 
 # === DASHBOARD ===
-if menu == "Dashboard":
-    st.markdown(f"""
-        <div class="hero-container" style="background-image: url('{IMAGEM_HERO}');">
-            <div class="hero-overlay"></div>
-            <div class="hero-content">
-                <div class="hero-number">01.</div>
-                <div class="hero-title">Seu inventário.<br>Total controle.</div>
-                <div class="hero-text">
-                    Gerencie todos os seus equipamentos e ativos de TI em um só lugar.<br>
-                    Cadastre, consulte e acompanhe seu estoque de forma ágil e profissional.
-                </div>
-                <div class="hero-badge">CONTROLE INTELIGENTE</div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
 
-    st.markdown("""
-        <div class="page-title">Visão geral do inventário</div>
-        <div class="page-subtitle">Acompanhe seus ativos e mantenha o estoque atualizado.</div>
-    """, unsafe_allow_html=True)
+if menu == "Dashboard":
+
+    st.markdown(
+        f"""
+        <div class="hero-container"
+             style="background-image: url('{IMAGEM_HERO}');">
+
+            <div class="hero-overlay"></div>
+
+            <div class="hero-content">
+
+                <div class="hero-number">01.</div>
+
+                <div class="hero-title">
+                    Seus materiais.<br>
+                    Total controle.
+                </div>
+
+                <div class="hero-text">
+
+                    Gerencie materiais, insumos e equipamentos médicos
+                    em um só lugar.<br>
+
+                    Cadastre, consulte e acompanhe seu estoque
+                    de forma ágil e profissional.
+
+                </div>
+
+                <div class="hero-badge">
+                    GESTÃO MÉDICA INTELIGENTE
+                </div>
+
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    st.markdown(
+        """
+        <div class="page-title">
+            Visão geral do estoque
+        </div>
+
+        <div class="page-subtitle">
+            Acompanhe seus materiais e mantenha o estoque médico atualizado.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 
     total_itens = len(df)
+
     valor_total = df["Valor"].sum()
+
     qtd_total = df["Quantidade"].sum()
 
+
     col1, col2, col3 = st.columns(3)
+
+
     with col1:
-        st.markdown(f"""
+
+        st.markdown(
+            f"""
             <div class="info-card">
-                <div class="card-number">{total_itens}</div>
-                <div class="card-label">ITENS CADASTRADOS</div>
+
+                <div class="card-number">
+                    {total_itens}
+                </div>
+
+                <div class="card-label">
+                    ITENS CADASTRADOS
+                </div>
+
             </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"""
-            <div class="info-card">
-                <div class="card-number">R$ {valor_total:,.2f}</div>
-                <div class="card-label">VALOR TOTAL DO ESTOQUE</div>
-            </div>
-        """, unsafe_allow_html=True)
-    with col3:
-        st.markdown(f"""
-            <div class="info-card">
-                <div class="card-number">{qtd_total:,.0f}</div>
-                <div class="card-label">QUANTIDADE TOTAL</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("<br>", unsafe_allow_html=True)
-    coluna1, coluna2 = st.columns([1.1, 1])
-    with coluna1:
-        st.markdown("""
-            <div class="dark-card">
-                <h2>Gestão Profissional</h2>
-                <p>O TechInventário PRO permite manter todos os equipamentos organizados e catalogados.</p>
-                <p>Monitore números de patrimônio, valores e quantidades com facilidade através de uma interface limpa.</p>
-            </div>
-        """, unsafe_allow_html=True)
-    with coluna2:
-        st.image(IMAGEM_FROTA, use_container_width=True)
-
-# === CADASTRAR ITEM ===
-elif menu == "+ Cadastrar Item":
-    st.markdown("""
-        <div class="page-title">Novo Equipamento</div>
-        <div class="page-subtitle">Adicione um novo ativo ao seu inventário.</div>
-    """, unsafe_allow_html=True)
-
-    with st.form("cadastro_item", clear_on_submit=True):
-        col1, col2 = st.columns(2)
-        with col1:
-            fabricante = st.text_input("Fabricante")
-            modelo = st.text_input("Modelo")
-            ano = st.number_input("Ano de Fabricação", min_value=1990, max_value=2035, value=2026, step=1)
-            categoria = st.selectbox("Categoria", ["Notebook", "Desktop", "Servidor", "Monitor", "Periférico", "Redes", "Outro"])
-        with col2:
-            patrimonio = st.text_input("Nº de Patrimônio / Série")
-            quantidade = st.number_input("Quantidade", min_value=1, value=1, step=1)
-            valor = st.number_input("Valor Unitário (R$)", min_value=0.0, value=0.0, step=100.0)
-            observacoes = st.text_area("Observações")
-
-        cadastrar = st.form_submit_button("CADASTRAR ITEM")
-
-        if cadastrar:
-            if fabricante.strip() and modelo.strip() and patrimonio.strip():
-                novo_item = pd.DataFrame([{
-                    "Fabricante": fabricante.strip(),
-                    "Modelo": modelo.strip(),
-                    "Ano": int(ano),
-                    "Categoria": categoria,
-                    "Patrimonio": patrimonio.strip().upper(),
-                    "Quantidade": int(quantidade),
-                    "Valor": float(valor),
-                    "Observacoes": observacoes.strip()
-                }])
-                df = pd.concat([df, novo_item], ignore_index=True)
-                salvar_dados(df)
-                st.success("Item cadastrado com sucesso!")
-                st.rerun()
-            else:
-                st.warning("Preencha Fabricante, Modelo e Patrimônio.")
-
-# === ITENS CADASTRADOS ===
-elif menu == "Itens Cadastrados":
-    st.markdown("""
-        <div class="page-title">Inventário Atual</div>
-        <div class="page-subtitle">Consulte e pesquise todos os equipamentos cadastrados.</div>
-    """, unsafe_allow_html=True)
-
-    if df.empty:
-        st.markdown("""
-            <div class="dark-card">
-                <h2>Nenhum item cadastrado</h2>
-                <p>Seu inventário ainda está vazio. Cadastre seu primeiro equipamento para começar.</p>
-            </div>
-        """, unsafe_allow_html=True)
-    else:
-        busca = st.text_input("Pesquisar item", placeholder="Digite fabricante, modelo, patrimônio ou categoria...")
-        if busca:
-            mascara = df.astype(str).apply(lambda coluna: coluna.str.contains(busca, case=False, na=False)).any(axis=1)
-            df_filtrado = df[mascara]
-        else:
-            df_filtrado = df
-
-        st.dataframe(df_filtrado, use_container_width=True, hide_index=True)
-        st.markdown("<br>", unsafe_allow_html=True)
-
-        opcoes_itens = df.index.tolist()
-        item_excluir = st.selectbox(
-            "Selecione um item para excluir",
-            options=opcoes_itens,
-            format_func=lambda indice: f"{df.loc[indice, 'Fabricante']} {df.loc[indice, 'Modelo']} - Patrimônio: {df.loc[indice, 'Patrimonio']}"
+            """,
+            unsafe_allow_html=True
         )
 
-        if st.button("EXCLUIR ITEM"):
-            df = df.drop(item_excluir).reset_index(drop=True)
+
+    with col2:
+
+        st.markdown(
+            f"""
+            <div class="info-card">
+
+                <div class="card-number">
+                    R$ {valor_total:,.2f}
+                </div>
+
+                <div class="card-label">
+                    VALOR TOTAL DO ESTOQUE
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with col3:
+
+        st.markdown(
+            f"""
+            <div class="info-card">
+
+                <div class="card-number">
+                    {qtd_total:,.0f}
+                </div>
+
+                <div class="card-label">
+                    QUANTIDADE TOTAL
+                </div>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+
+    coluna1, coluna2 = st.columns([1.1, 1])
+
+
+    with coluna1:
+
+        st.markdown(
+            """
+            <div class="dark-card">
+
+                <h2>
+                    Gestão Profissional de Materiais Médicos
+                </h2>
+
+                <p>
+                    O MedInventário PRO permite manter materiais,
+                    insumos e equipamentos médicos organizados
+                    e catalogados.
+                </p>
+
+                <p>
+                    Monitore lotes, validade, valores e quantidades
+                    com facilidade através de uma interface limpa.
+                </p>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    with coluna2:
+
+        st.image(
+            IMAGEM_FROTA,
+            use_container_width=True
+        )
+
+
+# === CADASTRAR MATERIAL ===
+
+elif menu == "+ Cadastrar Material":
+
+    st.markdown(
+        """
+        <div class="page-title">
+            Novo Material Médico
+        </div>
+
+        <div class="page-subtitle">
+            Adicione um novo material ou equipamento médico ao estoque.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    with st.form(
+        "cadastro_item",
+        clear_on_submit=True
+    ):
+
+        col1, col2 = st.columns(2)
+
+
+        with col1:
+
+            fabricante = st.text_input(
+                "Fabricante / Marca"
+            )
+
+            modelo = st.text_input(
+                "Nome / Modelo do Material"
+            )
+
+            ano = st.number_input(
+                "Ano de Fabricação",
+                min_value=1950,
+                max_value=2035,
+                value=2026,
+                step=1
+            )
+
+            categoria = st.selectbox(
+                "Categoria",
+                [
+                    "Equipamento Médico",
+                    "Instrumental Cirúrgico",
+                    "Material Hospitalar",
+                    "Material de Enfermagem",
+                    "EPI",
+                    "Descartável",
+                    "Diagnóstico",
+                    "Laboratório",
+                    "Medicamento / Insumo",
+                    "Outro"
+                ]
+            )
+
+
+        with col2:
+
+            patrimonio = st.text_input(
+                "Lote / Nº de Série / Patrimônio"
+            )
+
+            quantidade = st.number_input(
+                "Quantidade em Estoque",
+                min_value=0,
+                value=1,
+                step=1
+            )
+
+            valor = st.number_input(
+                "Valor Unitário (R$)",
+                min_value=0.0,
+                value=0.0,
+                step=10.0
+            )
+
+            observacoes = st.text_area(
+                "Observações / Local de Armazenamento / Validade"
+            )
+
+
+        cadastrar = st.form_submit_button(
+            "CADASTRAR MATERIAL"
+        )
+
+
+        if cadastrar:
+
+            if (
+                fabricante.strip()
+                and modelo.strip()
+                and patrimonio.strip()
+            ):
+
+                novo_item = pd.DataFrame(
+                    [
+                        {
+                            "Fabricante": fabricante.strip(),
+
+                            "Modelo": modelo.strip(),
+
+                            "Ano": int(ano),
+
+                            "Categoria": categoria,
+
+                            "Patrimonio": patrimonio.strip().upper(),
+
+                            "Quantidade": int(quantidade),
+
+                            "Valor": float(valor),
+
+                            "Observacoes": observacoes.strip()
+                        }
+                    ]
+                )
+
+
+                df = pd.concat(
+                    [
+                        df,
+                        novo_item
+                    ],
+                    ignore_index=True
+                )
+
+
+                salvar_dados(df)
+
+
+                st.success(
+                    "Material médico cadastrado com sucesso!"
+                )
+
+                st.rerun()
+
+
+            else:
+
+                st.warning(
+                    "Preencha Fabricante/Marca, Nome/Modelo "
+                    "e Lote/Série/Patrimônio."
+                )
+
+
+# === MATERIAIS CADASTRADOS ===
+
+elif menu == "Materiais Cadastrados":
+
+    st.markdown(
+        """
+        <div class="page-title">
+            Inventário Atual
+        </div>
+
+        <div class="page-subtitle">
+            Consulte e pesquise todos os materiais e equipamentos
+            médicos cadastrados.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    if df.empty:
+
+        st.markdown(
+            """
+            <div class="dark-card">
+
+                <h2>
+                    Nenhum material cadastrado
+                </h2>
+
+                <p>
+                    Seu estoque ainda está vazio.
+                    Cadastre seu primeiro material médico
+                    para começar.
+                </p>
+
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+    else:
+
+        busca = st.text_input(
+            "Pesquisar material",
+            placeholder="Digite fabricante, material, lote, patrimônio ou categoria..."
+        )
+
+
+        if busca:
+
+            mascara = (
+                df.astype(str)
+                .apply(
+                    lambda coluna:
+                    coluna.str.contains(
+                        busca,
+                        case=False,
+                        na=False
+                    )
+                )
+                .any(axis=1)
+            )
+
+            df_filtrado = df[mascara]
+
+        else:
+
+            df_filtrado = df
+
+
+        st.dataframe(
+            df_filtrado,
+            use_container_width=True,
+            hide_index=True
+        )
+
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+
+        opcoes_itens = df.index.tolist()
+
+
+        item_excluir = st.selectbox(
+
+            "Selecione um material para excluir",
+
+            options=opcoes_itens,
+
+            format_func=lambda indice:
+                f"{df.loc[indice, 'Fabricante']} "
+                f"{df.loc[indice, 'Modelo']} - "
+                f"Lote/Série: "
+                f"{df.loc[indice, 'Patrimonio']}"
+        )
+
+
+        if st.button("EXCLUIR MATERIAL"):
+
+            df = df.drop(
+                item_excluir
+            ).reset_index(drop=True)
+
             salvar_dados(df)
-            st.success("Item excluído com sucesso!")
+
+            st.success(
+                "Material médico excluído com sucesso!"
+            )
+
             st.rerun()
 
+
 # === RODAPÉ ===
-st.markdown("""
+
+st.markdown(
+    """
     <div class="footer">
-        TechInventário PRO<br>
-        Gestão inteligente de ativos
+
+        MedInventário PRO<br>
+
+        Gestão inteligente de materiais médicos
+
     </div>
-""", unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True
+)
