@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 import textwrap
+import requests
+import base64
 
 
 # ============================================================
@@ -41,12 +43,65 @@ IMAGEM_FROTA = (
 
 
 # ============================================================
-# FUNÇÃO PARA RENDERIZAR HTML CORRETAMENTE
+# CONVERTER IMAGEM PARA BASE64
+# ============================================================
+
+def imagem_base64(url):
+
+    try:
+
+        resposta = requests.get(
+            url,
+            timeout=15
+        )
+
+        resposta.raise_for_status()
+
+        imagem = base64.b64encode(
+            resposta.content
+        ).decode("utf-8")
+
+        tipo = resposta.headers.get(
+            "Content-Type",
+            "image/jpeg"
+        )
+
+        return f"data:{tipo};base64,{imagem}"
+
+    except Exception:
+
+        return None
+
+
+# ============================================================
+# CARREGAR IMAGENS
+# ============================================================
+
+HERO_BASE64 = imagem_base64(
+    IMAGEM_HERO
+)
+
+FROTA_BASE64 = imagem_base64(
+    IMAGEM_FROTA
+)
+
+
+# ============================================================
+# FUNÇÃO PARA HTML
 # ============================================================
 
 def mostrar_html(html):
+
+    html = textwrap.dedent(html)
+
+    html = " ".join(
+        linha.strip()
+        for linha in html.splitlines()
+        if linha.strip()
+    )
+
     st.markdown(
-        textwrap.dedent(html),
+        html,
         unsafe_allow_html=True
     )
 
@@ -57,342 +112,427 @@ def mostrar_html(html):
 
 st.markdown(
     """
-    <style>
-
-    @import url(
-        'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap'
-    );
-
-    html, body, [class*="css"] {
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .stApp {
-        background:
-            linear-gradient(
-                135deg,
-                #F0F0E5 0%,
-                #E1E4C8 50%,
-                #D4DCB5 100%
-            );
-    }
-
-    .block-container {
-        max-width: 1400px;
-        padding-top: 2rem;
-        padding-bottom: 3rem;
-    }
-
-    /* ================= SIDEBAR ================= */
-
-    [data-testid="stSidebar"] {
-        background:
-            linear-gradient(
-                180deg,
-                #162630,
-                #223944
-            );
-
-        border-right: 2px solid #77864B;
-    }
-
-    [data-testid="stSidebar"] * {
-        color: #FFFFFF !important;
-    }
-
-    .logo-title {
-        font-size: 28px;
-        font-weight: 800;
-        color: #FFFFFF !important;
-        margin-bottom: 5px;
-    }
-
-    .logo-subtitle {
-        font-size: 11px;
-        font-weight: 700;
-        color: #BFCB9C !important;
-        letter-spacing: 1px;
-    }
-
-
-    /* ================= TÍTULOS ================= */
+<style>
 
-    .page-title {
-        font-size: 38px;
-        font-weight: 800;
-        color: #26311F !important;
-        margin-bottom: 5px;
-    }
+@import url(
+'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap'
+);
 
-    .page-subtitle {
-        font-size: 17px;
-        color: #46513B !important;
-        margin-bottom: 30px;
-    }
+html, body, [class*="css"] {
+    font-family: 'Poppins', sans-serif;
+}
 
+.stApp {
+    background:
+        linear-gradient(
+            135deg,
+            #F0F0E5 0%,
+            #E1E4C8 50%,
+            #D4DCB5 100%
+        );
+}
 
-    /* ================= HERO ================= */
+.block-container {
+    max-width: 1400px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
 
-    .hero-container {
-        position: relative;
-        height: 430px;
-        width: 100%;
-        border-radius: 28px;
-        overflow: hidden;
-        margin-bottom: 35px;
 
-        background-size: cover;
-        background-position: center;
+/* ============================================================
+   SIDEBAR
+   ============================================================ */
 
-        box-shadow:
-            0 15px 35px rgba(0, 0, 0, 0.22);
-    }
+[data-testid="stSidebar"] {
 
-    .hero-overlay {
-        position: absolute;
-        inset: 0;
+    background:
+        linear-gradient(
+            180deg,
+            #162630,
+            #223944
+        );
 
-        background:
-            linear-gradient(
-                90deg,
-                rgba(14, 28, 38, 0.97) 0%,
-                rgba(14, 28, 38, 0.86) 45%,
-                rgba(14, 28, 38, 0.18) 100%
-            );
-    }
+    border-right:
+        2px solid #77864B;
+}
 
-    .hero-content {
-        position: absolute;
-        top: 50%;
-        left: 7%;
+[data-testid="stSidebar"] * {
+    color: #FFFFFF !important;
+}
 
-        transform: translateY(-50%);
+.logo-title {
 
-        max-width: 580px;
-    }
+    font-size: 28px;
 
-    .hero-number {
-        font-size: 70px;
-        font-weight: 800;
-        color: #A4D080 !important;
-        line-height: 1;
-    }
+    font-weight: 800;
 
-    .hero-title {
-        font-size: 46px;
-        font-weight: 800;
-        color: #FFFFFF !important;
+    color: #FFFFFF !important;
 
-        margin-top: 12px;
+    margin-bottom: 5px;
+}
 
-        line-height: 1.1;
-    }
+.logo-subtitle {
 
-    .hero-text {
-        font-size: 17px;
-        color: #E8EDDE !important;
+    font-size: 11px;
 
-        margin-top: 20px;
+    font-weight: 700;
 
-        line-height: 1.7;
-    }
+    color: #BFCB9C !important;
 
-    .hero-badge {
-        display: inline-block;
+    letter-spacing: 1px;
+}
 
-        margin-top: 24px;
 
-        padding: 10px 22px;
+/* ============================================================
+   TÍTULOS
+   ============================================================ */
 
-        border-radius: 30px;
+.page-title {
 
-        background: #6E8040;
+    font-size: 38px;
 
-        color: #FFFFFF !important;
+    font-weight: 800;
 
-        font-size: 14px;
-        font-weight: 700;
-    }
+    color: #26311F !important;
 
+    margin-bottom: 5px;
+}
 
-    /* ================= CARDS ================= */
+.page-subtitle {
 
-    .info-card {
-        background: #FFFFFF;
+    font-size: 17px;
 
-        border-radius: 22px;
+    color: #46513B !important;
 
-        padding: 28px;
+    margin-bottom: 30px;
+}
 
-        min-height: 170px;
 
-        border:
-            1px solid
-            rgba(111, 128, 63, 0.30);
+/* ============================================================
+   HERO
+   ============================================================ */
 
-        box-shadow:
-            0 10px 25px
-            rgba(0, 0, 0, 0.08);
-    }
+.hero-container {
 
-    .card-number {
-        font-size: 34px;
-        font-weight: 800;
+    position: relative;
 
-        color: #26311F !important;
+    height: 430px;
 
-        margin-top: 10px;
-    }
+    width: 100%;
 
-    .card-label {
-        font-size: 14px;
-        font-weight: 700;
+    border-radius: 28px;
 
-        color: #566248 !important;
+    overflow: hidden;
 
-        margin-top: 5px;
-    }
+    margin-bottom: 35px;
 
+    background-size: cover;
 
-    /* ================= CARD ESCURA ================= */
+    background-position: center;
 
-    .dark-card {
-        background:
-            linear-gradient(
-                135deg,
-                #152631,
-                #233C48
-            );
+    box-shadow:
+        0 15px 35px rgba(0,0,0,0.22);
+}
 
-        border-radius: 24px;
+.hero-overlay {
 
-        padding: 30px;
+    position: absolute;
 
-        box-shadow:
-            0 12px 30px
-            rgba(0, 0, 0, 0.16);
-    }
+    inset: 0;
 
-    .dark-card h2 {
-        color: #FFFFFF !important;
-        margin-top: 0;
-    }
+    background:
+        linear-gradient(
+            90deg,
+            rgba(14,28,38,0.97) 0%,
+            rgba(14,28,38,0.86) 45%,
+            rgba(14,28,38,0.18) 100%
+        );
+}
 
-    .dark-card p {
-        color: #E2E9DA !important;
-        line-height: 1.7;
-    }
+.hero-content {
 
+    position: absolute;
 
-    /* ================= FORMULÁRIO ================= */
+    top: 50%;
 
-    [data-testid="stForm"] {
-        background:
-            rgba(255, 255, 255, 0.85);
+    left: 7%;
 
-        padding: 30px;
+    transform: translateY(-50%);
 
-        border-radius: 25px;
+    max-width: 580px;
+}
 
-        border:
-            1px solid #B8C391;
+.hero-number {
 
-        box-shadow:
-            0 10px 30px
-            rgba(0, 0, 0, 0.08);
-    }
+    font-size: 70px;
 
-    [data-testid="stWidgetLabel"] label,
-    .stTextInput label,
-    .stNumberInput label,
-    .stSelectbox label,
-    .stTextArea label {
-        color: #26311F !important;
+    font-weight: 800;
 
-        font-size: 15px !important;
+    color: #A4D080 !important;
 
-        font-weight: 700 !important;
-    }
+    line-height: 1;
+}
 
+.hero-title {
 
-    /* ================= CAMPOS ================= */
+    font-size: 46px;
 
-    .stTextInput input,
-    .stNumberInput input,
-    .stTextArea textarea {
-        background-color: #FFFFFF !important;
+    font-weight: 800;
 
-        color: #202820 !important;
+    color: #FFFFFF !important;
 
-        border:
-            2px solid #7C8956 !important;
+    margin-top: 12px;
 
-        border-radius: 12px !important;
+    line-height: 1.1;
+}
 
-        font-size: 16px !important;
-    }
+.hero-text {
 
+    font-size: 17px;
 
-    /* ================= SELECTBOX ================= */
+    color: #E8EDDE !important;
 
-    [data-baseweb="select"] > div {
-        background-color: #2F323C !important;
+    margin-top: 20px;
 
-        border:
-            2px solid #687548 !important;
+    line-height: 1.7;
+}
 
-        border-radius: 12px !important;
-    }
+.hero-badge {
 
-    [data-baseweb="select"] * {
-        color: #FFFFFF !important;
-    }
+    display: inline-block;
 
+    margin-top: 24px;
 
-    /* ================= BOTÕES ================= */
+    padding: 10px 22px;
 
-    .stButton > button,
-    div[data-testid="stFormSubmitButton"] > button {
+    border-radius: 30px;
 
-        background:
-            linear-gradient(
-                135deg,
-                #52632D,
-                #788B48
-            ) !important;
+    background: #6E8040;
 
-        color: #FFFFFF !important;
+    color: #FFFFFF !important;
 
-        border: none !important;
+    font-size: 14px;
 
-        border-radius: 14px !important;
+    font-weight: 700;
+}
 
-        min-height: 54px;
 
-        font-weight: 700 !important;
+/* ============================================================
+   CARDS
+   ============================================================ */
 
-        box-shadow:
-            0 8px 18px
-            rgba(82, 99, 45, 0.25);
-    }
+.info-card {
 
+    background: #FFFFFF;
 
-    /* ================= RODAPÉ ================= */
+    border-radius: 22px;
 
-    .footer {
-        margin-top: 50px;
+    padding: 28px;
 
-        text-align: center;
+    min-height: 170px;
 
-        color: #536044 !important;
+    border:
+        1px solid rgba(111,128,63,0.30);
 
-        font-size: 14px;
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.08);
+}
 
-        font-weight: 600;
-    }
+.card-number {
 
-    </style>
-    """,
+    font-size: 34px;
+
+    font-weight: 800;
+
+    color: #26311F !important;
+
+    margin-top: 10px;
+}
+
+.card-label {
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    color: #566248 !important;
+
+    margin-top: 5px;
+}
+
+
+/* ============================================================
+   CARD ESCURA
+   ============================================================ */
+
+.dark-card {
+
+    background:
+        linear-gradient(
+            135deg,
+            #152631,
+            #233C48
+        );
+
+    border-radius: 24px;
+
+    padding: 30px;
+
+    box-shadow:
+        0 12px 30px rgba(0,0,0,0.16);
+}
+
+.dark-card h2 {
+
+    color: #FFFFFF !important;
+
+    margin-top: 0;
+}
+
+.dark-card p {
+
+    color: #E2E9DA !important;
+
+    line-height: 1.7;
+}
+
+
+/* ============================================================
+   FORMULÁRIO
+   ============================================================ */
+
+[data-testid="stForm"] {
+
+    background:
+        rgba(255,255,255,0.85);
+
+    padding: 30px;
+
+    border-radius: 25px;
+
+    border:
+        1px solid #B8C391;
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.08);
+}
+
+[data-testid="stWidgetLabel"] label,
+.stTextInput label,
+.stNumberInput label,
+.stSelectbox label,
+.stTextArea label {
+
+    color: #26311F !important;
+
+    font-size: 15px !important;
+
+    font-weight: 700 !important;
+}
+
+
+/* ============================================================
+   CAMPOS
+   ============================================================ */
+
+.stTextInput input,
+.stNumberInput input,
+.stTextArea textarea {
+
+    background-color:
+        #FFFFFF !important;
+
+    color:
+        #202820 !important;
+
+    border:
+        2px solid #7C8956 !important;
+
+    border-radius:
+        12px !important;
+
+    font-size:
+        16px !important;
+}
+
+
+/* ============================================================
+   SELECTBOX
+   ============================================================ */
+
+[data-baseweb="select"] > div {
+
+    background-color:
+        #2F323C !important;
+
+    border:
+        2px solid #687548 !important;
+
+    border-radius:
+        12px !important;
+}
+
+[data-baseweb="select"] * {
+
+    color:
+        #FFFFFF !important;
+}
+
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+
+.stButton > button,
+div[data-testid="stFormSubmitButton"] > button {
+
+    background:
+        linear-gradient(
+            135deg,
+            #52632D,
+            #788B48
+        ) !important;
+
+    color:
+        #FFFFFF !important;
+
+    border:
+        none !important;
+
+    border-radius:
+        14px !important;
+
+    min-height:
+        54px;
+
+    font-weight:
+        700 !important;
+
+    box-shadow:
+        0 8px 18px
+        rgba(82,99,45,0.25);
+}
+
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+
+.footer {
+
+    margin-top: 50px;
+
+    text-align: center;
+
+    color: #536044 !important;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+</style>
+""",
     unsafe_allow_html=True
 )
 
@@ -418,15 +558,21 @@ def carregar_dados():
 
         try:
 
-            dados = pd.read_csv(ARQUIVO)
+            dados = pd.read_csv(
+                ARQUIVO
+            )
 
             return dados
 
         except Exception:
 
-            return pd.DataFrame(columns=colunas)
+            return pd.DataFrame(
+                columns=colunas
+            )
 
-    return pd.DataFrame(columns=colunas)
+    return pd.DataFrame(
+        columns=colunas
+    )
 
 
 def salvar_dados(dados):
@@ -508,7 +654,9 @@ menu = st.sidebar.radio(
 )
 
 
-st.sidebar.markdown("---")
+st.sidebar.markdown(
+    "---"
+)
 
 
 st.sidebar.caption(
@@ -522,11 +670,24 @@ st.sidebar.caption(
 
 if menu == "Dashboard":
 
+    # --------------------------------------------------------
+    # HERO
+    # --------------------------------------------------------
+
+    imagem_hero = (
+        HERO_BASE64
+        if HERO_BASE64
+        else IMAGEM_HERO
+    )
+
     mostrar_html(
         f"""
         <div
             class="hero-container"
-            style="background-image: url('{IMAGEM_HERO}');"
+            style="
+                background-image:
+                url('{imagem_hero}');
+            "
         >
 
             <div class="hero-overlay"></div>
@@ -544,8 +705,8 @@ if menu == "Dashboard":
 
                 <div class="hero-text">
 
-                    Gerencie materiais, insumos e equipamentos
-                    médicos em um só lugar.<br><br>
+                    Gerencie materiais, insumos e
+                    equipamentos médicos em um só lugar.<br>
 
                     Cadastre, consulte e acompanhe seu estoque
                     de forma ágil e profissional.
@@ -563,6 +724,10 @@ if menu == "Dashboard":
     )
 
 
+    # --------------------------------------------------------
+    # TÍTULO
+    # --------------------------------------------------------
+
     mostrar_html(
         """
         <div class="page-title">
@@ -570,11 +735,16 @@ if menu == "Dashboard":
         </div>
 
         <div class="page-subtitle">
-            Acompanhe seus materiais e mantenha o estoque médico atualizado.
+            Acompanhe seus materiais e mantenha
+            o estoque médico atualizado.
         </div>
         """
     )
 
+
+    # --------------------------------------------------------
+    # VALORES
+    # --------------------------------------------------------
 
     total_itens = len(df)
 
@@ -583,12 +753,12 @@ if menu == "Dashboard":
     qtd_total = df["Quantidade"].sum()
 
 
+    # --------------------------------------------------------
+    # CARDS
+    # --------------------------------------------------------
+
     col1, col2, col3 = st.columns(3)
 
-
-    # ========================================================
-    # CARD 1
-    # ========================================================
 
     with col1:
 
@@ -609,10 +779,6 @@ if menu == "Dashboard":
         )
 
 
-    # ========================================================
-    # CARD 2
-    # ========================================================
-
     with col2:
 
         mostrar_html(
@@ -631,10 +797,6 @@ if menu == "Dashboard":
             """
         )
 
-
-    # ========================================================
-    # CARD 3
-    # ========================================================
 
     with col3:
 
@@ -661,14 +823,14 @@ if menu == "Dashboard":
     )
 
 
+    # --------------------------------------------------------
+    # INFORMAÇÕES
+    # --------------------------------------------------------
+
     coluna1, coluna2 = st.columns(
         [1.1, 1]
     )
 
-
-    # ========================================================
-    # CARD INFORMATIVO
-    # ========================================================
 
     with coluna1:
 
@@ -677,18 +839,20 @@ if menu == "Dashboard":
             <div class="dark-card">
 
                 <h2>
-                    Gestão Profissional de Materiais Médicos
+                    Gestão Profissional de
+                    Materiais Médicos
                 </h2>
 
                 <p>
-                    O MedInventário PRO permite manter materiais,
-                    insumos e equipamentos médicos organizados
-                    e catalogados.
+                    O MedInventário PRO permite manter
+                    materiais, insumos e equipamentos
+                    médicos organizados e catalogados.
                 </p>
 
                 <p>
-                    Monitore lotes, validade, valores e quantidades
-                    com facilidade através de uma interface limpa.
+                    Monitore lotes, valores e quantidades
+                    com facilidade através de uma
+                    interface limpa.
                 </p>
 
             </div>
@@ -696,16 +860,30 @@ if menu == "Dashboard":
         )
 
 
-    # ========================================================
-    # IMAGEM
-    # ========================================================
-
     with coluna2:
 
-        st.image(
-            IMAGEM_FROTA,
-            use_container_width=True
-        )
+        if FROTA_BASE64:
+
+            st.markdown(
+                f"""
+                <img
+                    src="{FROTA_BASE64}"
+                    style="
+                        width: 100%;
+                        border-radius: 24px;
+                        display: block;
+                    "
+                >
+                """,
+                unsafe_allow_html=True
+            )
+
+        else:
+
+            st.image(
+                IMAGEM_FROTA,
+                use_container_width=True
+            )
 
 
 # ============================================================
@@ -721,7 +899,8 @@ elif menu == "+ Cadastrar Material":
         </div>
 
         <div class="page-subtitle">
-            Adicione um novo material ou equipamento médico ao estoque.
+            Adicione um novo material ou equipamento
+            médico ao estoque.
         </div>
         """
     )
@@ -735,9 +914,9 @@ elif menu == "+ Cadastrar Material":
         col1, col2 = st.columns(2)
 
 
-        # ====================================================
+        # ----------------------------------------------------
         # COLUNA 1
-        # ====================================================
+        # ----------------------------------------------------
 
         with col1:
 
@@ -777,9 +956,9 @@ elif menu == "+ Cadastrar Material":
             )
 
 
-        # ====================================================
+        # ----------------------------------------------------
         # COLUNA 2
-        # ====================================================
+        # ----------------------------------------------------
 
         with col2:
 
@@ -809,9 +988,9 @@ elif menu == "+ Cadastrar Material":
             )
 
 
-        # ====================================================
-        # BOTÃO CADASTRAR
-        # ====================================================
+        # ----------------------------------------------------
+        # BOTÃO
+        # ----------------------------------------------------
 
         cadastrar = st.form_submit_button(
             "CADASTRAR MATERIAL"
@@ -866,7 +1045,9 @@ elif menu == "+ Cadastrar Material":
                 )
 
 
-                salvar_dados(df)
+                salvar_dados(
+                    df
+                )
 
 
                 st.success(
@@ -895,20 +1076,20 @@ elif menu == "Materiais Cadastrados":
     mostrar_html(
         """
         <div class="page-title">
-            Materiais Cadastrados
+            Inventário Atual
         </div>
 
         <div class="page-subtitle">
-            Consulte e pesquise todos os materiais e equipamentos
-            médicos cadastrados.
+            Consulte e pesquise todos os materiais
+            e equipamentos médicos cadastrados.
         </div>
         """
     )
 
 
-    # ========================================================
-    # NENHUM ITEM
-    # ========================================================
+    # --------------------------------------------------------
+    # ESTOQUE VAZIO
+    # --------------------------------------------------------
 
     if df.empty:
 
@@ -922,8 +1103,8 @@ elif menu == "Materiais Cadastrados":
 
                 <p>
                     Seu estoque ainda está vazio.
-                    Cadastre seu primeiro material médico
-                    para começar.
+                    Cadastre seu primeiro material
+                    médico para começar.
                 </p>
 
             </div>
@@ -931,24 +1112,24 @@ elif menu == "Materiais Cadastrados":
         )
 
 
-    # ========================================================
-    # EXISTEM ITENS
-    # ========================================================
+    # --------------------------------------------------------
+    # ESTOQUE COM ITENS
+    # --------------------------------------------------------
 
     else:
 
         busca = st.text_input(
             "Pesquisar material",
             placeholder=(
-                "Digite fabricante, material, lote, "
-                "patrimônio ou categoria..."
+                "Digite fabricante, material, "
+                "lote, patrimônio ou categoria..."
             )
         )
 
 
-        # ====================================================
-        # FILTRO DE PESQUISA
-        # ====================================================
+        # ----------------------------------------------------
+        # PESQUISA
+        # ----------------------------------------------------
 
         if busca:
 
@@ -965,17 +1146,18 @@ elif menu == "Materiais Cadastrados":
                 .any(axis=1)
             )
 
-            df_filtrado = df[mascara]
-
+            df_filtrado = df[
+                mascara
+            ]
 
         else:
 
             df_filtrado = df
 
 
-        # ====================================================
+        # ----------------------------------------------------
         # TABELA
-        # ====================================================
+        # ----------------------------------------------------
 
         st.dataframe(
             df_filtrado,
@@ -990,19 +1172,21 @@ elif menu == "Materiais Cadastrados":
         )
 
 
-        # ====================================================
-        # EXCLUSÃO
-        # ====================================================
+        # ----------------------------------------------------
+        # EXCLUIR
+        # ----------------------------------------------------
 
         opcoes_itens = df.index.tolist()
 
 
         item_excluir = st.selectbox(
+
             "Selecione um material para excluir",
 
             options=opcoes_itens,
 
             format_func=lambda indice:
+
                 (
                     f"{df.loc[indice, 'Fabricante']} "
                     f"{df.loc[indice, 'Modelo']} "
@@ -1023,7 +1207,9 @@ elif menu == "Materiais Cadastrados":
             )
 
 
-            salvar_dados(df)
+            salvar_dados(
+                df
+            )
 
 
             st.success(
