@@ -1,0 +1,13 @@
+# Ambientes virtuais
+venv/
+env/
+ENV/
+
+# Arquivos de sistema e cache
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+
+# Dados locais gerados pelo app
+materiais.csv
