@@ -10,7 +10,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-ARQUIVO = "materiais_medicos.csv"
+ARQUIVO = "materiais.csv"
 
 # === IMAGENS ===
 IMAGEM_HERO = (
